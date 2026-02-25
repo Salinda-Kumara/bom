@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  dashboard:
+    build: .
+    ports:
+      - "2000:2000"
+    restart: unless-stopped

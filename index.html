@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAB Campus Monthly Progress Dashboard</title>
+    <meta name="description" content="SAB Campus Monthly Performance Dashboard - Dynamic Data Visualization">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Upload Screen -->
+    <div class="upload-overlay" id="uploadOverlay">
+        <div class="upload-bg-pattern"></div>
+        <div class="upload-container">
+            <div class="upload-logo">SAB</div>
+            <h1 class="upload-title">SAB Campus Monthly Progress</h1>
+            <p class="upload-desc">Upload your PowerBI Excel file to generate the dashboard</p>
+
+            <div class="upload-dropzone" id="dropzone">
+                <svg class="upload-icon" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="1.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                <p class="drop-text">Drag & drop your Excel file here</p>
+                <p class="drop-sub">or click to browse</p>
+                <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+            </div>
+
+            <div class="upload-format-info">
+                <h4>Expected Sheet Format:</h4>
+                <div class="format-tags">
+                    <span class="format-tag">Lecture_Breakdown</span>
+                    <span class="format-tag">Exam_Status</span>
+                    <span class="format-tag">Highlights</span>
+                    <span class="format-tag">Enrollments</span>
+                    <span class="format-tag">Batch_Transfers</span>
+                    <span class="format-tag">Dropouts</span>
+                    <span class="format-tag">Lecture_Commencements</span>
+                    <span class="format-tag">Lecture_Endings</span>
+                    <span class="format-tag">Internship</span>
+                    <span class="format-tag">Counselling sessions</span>
+                </div>
+            </div>
+
+            <div class="upload-progress" id="uploadProgress" style="display:none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text" id="progressText">Reading file...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar" style="display:none;">
+        <div class="sidebar-header">
+            <div class="logo-icon">SAB</div>
+            <span class="sidebar-title">Monthly Report</span>
+        </div>
+        <ul class="nav-list">
+            <li><a href="#hero" class="nav-link active" data-section="hero">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                    <span>Overview</span>
+                </a></li>
+            <li><a href="#academic" class="nav-link" data-section="academic">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                        <path d="M6 12v5c3 3 10 3 12 0v-5" />
+                    </svg>
+                    <span>Academic Admin</span>
+                </a></li>
+            <li><a href="#marketing" class="nav-link" data-section="marketing">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20V10" />
+                        <path d="M18 20V4" />
+                        <path d="M6 20v-4" />
+                    </svg>
+                    <span>Marketing</span>
+                </a></li>
+            <li><a href="#highlights" class="nav-link" data-section="highlights">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon
+                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                    <span>Highlights</span>
+                </a></li>
+            <li><a href="#exams" class="nav-link" data-section="exams">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>
+                    <span>Examinations</span>
+                </a></li>
+            <li><a href="#welfare" class="nav-link" data-section="welfare">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                    </svg>
+                    <span>Student Welfare</span>
+                </a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="reload-btn" id="reloadBtn" title="Load a different file">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="1 4 1 10 7 10" />
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                </svg>
+                <span>Load New File</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent" style="display:none;">
+
+        <!-- Hero Section -->
+        <section id="hero" class="section hero-section">
+            <div class="hero-bg-pattern"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">SAB Campus</h1>
+                <p class="hero-subtitle">Monthly Progress Report</p>
+                <div class="hero-month-badge" id="heroMonthBadge">—</div>
+            </div>
+            <div class="kpi-row" id="kpiRow"></div>
+        </section>
+
+        <!-- Academic Administration Section -->
+        <section id="academic" class="section">
+            <div class="section-header">
+                <div class="section-icon academic-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                        <path d="M6 12v5c3 3 10 3 12 0v-5" />
+                    </svg>
+                </div>
+                <h2>Academic Administration Division</h2>
+            </div>
+            <div class="grid-2col">
+                <div class="card">
+                    <h3 class="card-title">Lecture Breakdown by Degree & Mode</h3>
+                    <div class="chart-container" style="height:320px;"><canvas id="lectureBreakdownChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Key Metrics</h3>
+                    <div class="metric-pills" id="metricPills"></div>
+                </div>
+            </div>
+            <div class="grid-2col" style="margin-top:24px;">
+                <div class="card">
+                    <h3 class="card-title"><span class="dot dot-green"></span> New Semester Commencements</h3>
+                    <div id="commencementsTable"></div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title"><span class="dot dot-red"></span> End Semester</h3>
+                    <div id="endingsTable"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Highlights & Events Section -->
+        <section id="highlights" class="section">
+            <div class="section-header">
+                <div class="section-icon highlights-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon
+                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                </div>
+                <h2>Highlights & Events</h2>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Guest Lectures</h3>
+                <div class="table-wrapper" id="guestLecturesTable"></div>
+            </div>
+            <div class="card" style="margin-top:24px;">
+                <h3 class="card-title">Campus Events</h3>
+                <div class="events-grid" id="eventsGrid"></div>
+            </div>
+        </section>
+
+        <!-- Marketing Division Section -->
+        <section id="marketing" class="section">
+            <div class="section-header">
+                <div class="section-icon marketing-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20V10" />
+                        <path d="M18 20V4" />
+                        <path d="M6 20v-4" />
+                    </svg>
+                </div>
+                <h2>Marketing Division</h2>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Student Enrollment – Budget vs Actual</h3>
+                <div class="table-wrapper" id="enrollmentTableWrap"></div>
+            </div>
+            <div class="grid-2col" style="margin-top:24px;">
+                <div class="card">
+                    <h3 class="card-title">Enrollment Comparison – Budget vs Actual</h3>
+                    <div class="chart-container" style="height:350px;"><canvas id="enrollmentChart"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Cumulative Enrollment by Programme</h3>
+                    <div class="chart-container" style="height:350px;"><canvas id="enrollmentPieChart"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Examinations Division Section -->
+        <section id="exams" class="section">
+            <div class="section-header">
+                <div class="section-icon exams-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>
+                </div>
+                <h2>Examinations Division</h2>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Exam Results Status by Cycle</h3>
+                <div class="chart-container" style="height:380px;"><canvas id="examStatusChart"></canvas></div>
+            </div>
+            <div class="card" style="margin-top:24px;">
+                <h3 class="card-title">Exam Cycle Summary</h3>
+                <div class="exam-cards-grid" id="examCardsGrid"></div>
+            </div>
+        </section>
+
+        <!-- Student Welfare Section -->
+        <section id="welfare" class="section">
+            <div class="section-header">
+                <div class="section-icon welfare-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                    </svg>
+                </div>
+                <h2>Student Welfare</h2>
+            </div>
+            <div class="grid-3col">
+                <div class="card">
+                    <h3 class="card-title">Internship Overview</h3>
+                    <div class="internship-stats" id="internshipStats"></div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Audit vs Non-Audit Placement</h3>
+                    <div class="chart-container" style="height:280px;"><canvas id="internshipPieChart"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">CA Registration Status</h3>
+                    <div class="chart-container" style="height:280px;"><canvas id="caRegistrationChart"></canvas></div>
+                </div>
+            </div>
+            <div class="grid-2col" style="margin-top:24px;">
+                <div class="card">
+                    <h3 class="card-title">Counselling Sessions</h3>
+                    <div class="chart-container" style="height:300px;"><canvas id="counsellingChart"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Welfare Summary</h3>
+                    <div class="welfare-summary" id="welfareSummary"></div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="dashboard-footer">
+            <p>SAB Campus Monthly Progress Report &bull; Dev@Salinda</p>
+        </footer>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
