@@ -1,37 +1,29 @@
-// ===== CHART.JS DEFAULTS — PPT LIGHT MODE =====
-Chart.defaults.color = '#5a6275';
-Chart.defaults.font.family = "'Inter', sans-serif";
-Chart.defaults.font.size = 12;
+// ===== CHART.JS DEFAULTS — PREMIUM MODERN UI =====
+Chart.defaults.color = '#64748b';
+Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+Chart.defaults.font.size = 13;
 Chart.defaults.plugins.legend.labels.usePointStyle = true;
-Chart.defaults.plugins.legend.labels.pointStyleWidth = 10;
-Chart.defaults.plugins.legend.labels.padding = 16;
+Chart.defaults.plugins.legend.labels.pointStyleWidth = 12;
+Chart.defaults.plugins.legend.labels.padding = 24;
+Chart.defaults.elements.bar.borderRadius = 8;
+Chart.defaults.elements.arc.borderWidth = 0;
 Chart.register(ChartDataLabels);
 
-// PowerPoint Office color palette
+// Premium Modern color palette (keeping 'PPT' variable name to avoid refactoring)
 const PPT = {
-    blue: '#4472c4',
-    orange: '#ed7d31',
-    gray: '#a5a5a5',
-    gold: '#ffc000',
-    dblue: '#264478',
-    green: '#70ad47',
-    red: '#c00000',
-    teal: '#45b5aa',
-    purple: '#7030a0',
-    ltblue: '#5b9bd5',
-    dgreen: '#2e7d32',
-    brown: '#997300',
+    blue: '#3b82f6', orange: '#f59e0b', gray: '#94a3b8',
+    gold: '#fbbf24', dblue: '#1d4ed8', green: '#10b981',
+    red: '#ef4444', teal: '#14b8a6', purple: '#8b5cf6',
+    ltblue: '#60a5fa', dgreen: '#047857', brown: '#b45309',
 };
+const PPT_COLORS = [PPT.blue, PPT.purple, PPT.orange, PPT.teal, PPT.green, PPT.ltblue, PPT.gold, PPT.red];
 
-// PPT chart color sequence (same order as Office)
-const PPT_COLORS = [PPT.blue, PPT.orange, PPT.gray, PPT.gold, PPT.dblue, PPT.green, PPT.teal, PPT.purple, PPT.ltblue, PPT.red, PPT.brown, PPT.dgreen];
-
-const gridColor = 'rgba(0,0,0,0.06)';
+const gridColor = '#f1f5f9';
 const tooltipConfig = {
-    backgroundColor: '#ffffff', titleColor: '#1a1d23', bodyColor: '#5a6275',
-    borderColor: '#e2e5ea', borderWidth: 1,
-    titleFont: { weight: '600', size: 13 }, bodyFont: { size: 12 },
-    padding: 12, cornerRadius: 8, displayColors: true, boxPadding: 4,
+    backgroundColor: '#ffffff', titleColor: '#0f172a', bodyColor: '#475569',
+    borderColor: '#e2e8f0', borderWidth: 1,
+    titleFont: { weight: '800', size: 14 }, bodyFont: { size: 13, weight: '500' },
+    padding: 16, cornerRadius: 12, displayColors: true, boxPadding: 6,
 };
 
 let chartInstances = {};
@@ -132,6 +124,8 @@ function processWorkbook(wb) {
     const highlightsData = parseHighlights(sheets['Highlights'] || findSheet('Highlight'));
     const internshipData = parseInternship(sheets['Internship'] || findSheet('Internship'));
     const counsellingData = parseCounselling(findSheet('Counselling'));
+    const meetingsData = parseHRTable(findSheet('Meetings') || findSheet('Meeting'));
+    const recruitmentData = parseHRTable(findSheet('Recruitment') || findSheet('Recruit'));
 
     buildKPIs(lectureData, enrollData, examData, batchTransfers, dropouts, counsellingData);
     buildLectureChart(lectureData);
@@ -145,7 +139,16 @@ function processWorkbook(wb) {
     buildExamCards(examData);
     buildInternshipSection(internshipData);
     buildCounsellingChart(counsellingData);
-    buildWelfareSummary(internshipData, counsellingData);
+    // buildWelfareSummary(internshipData, counsellingData);
+    buildHRSection(meetingsData, recruitmentData);
+
+    // Trigger staggered animations for modern UI effect
+    setTimeout(() => {
+        document.querySelectorAll('.card, .kpi-card, .event-card').forEach((el, i) => {
+            el.classList.add('fade-in');
+            el.style.animationDelay = `${(i % 10) * 0.05}s`;
+        });
+    }, 100);
 }
 
 // ===== PARSERS =====
@@ -180,63 +183,60 @@ function parseExamStatus(rows) {
     }
     return result;
 }
-
 function parseEnrollments(rows) {
-    if (!rows || rows.length < 3) return { headers: [], programmes: [] };
+    if (!rows || rows.length < 5) return { budgetActual: [], mohePipeline: [] };
+    const budgetActual = [];
+    const mohePipeline = [];
 
-    let headerIdx = -1;
-    for (let i = 0; i < Math.min(10, rows.length); i++) {
-        if (rows[i] && rows[i].some(c => c && String(c).includes('Target'))) { headerIdx = i; break; }
-    }
-    if (headerIdx < 0) return { headers: [], programmes: [] };
-
-    const periodRow = headerIdx > 0 ? (rows[headerIdx - 1] || []) : [];
-    const subRow = rows[headerIdx];
-    const numCols = Math.max(periodRow.length, subRow.length);
-
-    const valStartCol = 2;
-    const headers = [];
-    let lastPeriod = '';
-    for (let c = valStartCol; c < numCols; c++) {
-        const top = periodRow[c] ? String(periodRow[c]).trim() : '';
-        const sub = subRow[c] ? String(subRow[c]).trim() : '';
-        if (top) lastPeriod = top;
-        if (sub && lastPeriod && !top) {
-            headers.push(lastPeriod + ' ' + sub);
-        } else if (top && sub) {
-            headers.push(top + ' ' + sub);
-        } else {
-            headers.push(top || sub || `Col${c}`);
+    // Parse Budget vs Actual (Rows 2 to 13)
+    let currentProgramme = '';
+    for (let i = 2; i <= 13; i++) {
+        const r = rows[i]; if (!r) continue;
+        if (r[0] && String(r[0]).trim()) {
+            currentProgramme = String(r[0]).trim();
         }
-    }
-
-    const programmes = [];
-    let currentProgramme = null;
-    for (let i = headerIdx + 1; i < rows.length; i++) {
-        const r = rows[i];
-        if (!r) continue;
-        const nameCell = r[0] ? String(r[0]).trim() : '';
-        const typeCell = r[1] ? String(r[1]).trim() : '';
-        if (nameCell) currentProgramme = nameCell;
-        if (typeCell === 'Budget' || typeCell === 'Actual') {
-            const values = [];
-            for (let c = valStartCol; c < numCols; c++) {
-                let v = r[c];
-                if (typeof v === 'string') {
-                    const num = parseFloat(v.replace(/[^0-9.\-]/g, ''));
-                    v = isNaN(num) ? null : num;
-                }
-                values.push(v != null ? v : null);
+        const type = r[1] ? String(r[1]).trim() : '';
+        
+        let finalNumber = 0;
+        for (let j = r.length - 1; j >= 2; j--) {
+            if (typeof r[j] === 'number') {
+                finalNumber = r[j];
+                break;
             }
-            programmes.push({
-                name: currentProgramme || '',
-                type: typeCell,
-                values,
-                isTotal: (currentProgramme || '').toUpperCase() === 'TOTAL'
-            });
+        }
+
+        if (type === 'Budget') {
+            budgetActual.push({ name: currentProgramme, budget: finalNumber, actual: 0 });
+        } else if (type === 'Actual') {
+            const entry = budgetActual.find(b => b.name === currentProgramme);
+            if (entry) entry.actual = finalNumber;
         }
     }
-    return { headers, programmes };
+
+    // Parse MoHE Admissions Pipeline
+    let pipelineStart = -1;
+    for (let i = 10; i < rows.length; i++) {
+        const r = rows[i];
+        if (r && r[1] && String(r[1]).toLowerCase().includes('applications received')) {
+            pipelineStart = i + 1;
+            break;
+        }
+    }
+    if (pipelineStart > -1) {
+        for (let i = pipelineStart; i < rows.length; i++) {
+            const r = rows[i]; if (!r || !r[0]) continue;
+            const name = String(r[0]).trim();
+            if (name.toLowerCase() === 'total' || name.toLowerCase() === 'degree') continue;
+            
+            const received = parseInt(String(r[1]).replace(/[^0-9]/g, '')) || 0;
+            const selected = parseInt(String(r[2]).replace(/[^0-9]/g, '')) || 0;
+            const registered = parseInt(String(r[3]).replace(/[^0-9]/g, '')) || 0;
+            
+            mohePipeline.push({ name, received, selected, registered });
+        }
+    }
+
+    return { budgetActual, mohePipeline };
 }
 
 // Sum all numeric values across all rows (for Batch_Transfers, Dropouts with monthly data)
@@ -291,6 +291,12 @@ function parseHighlights(rows) {
             for (let j = i + 1; j < rows.length; j++) {
                 const ev = rows[j]; if (!ev) continue;
                 const name = ev[1] ? String(ev[1]).trim() : '';
+                
+                // Stop parsing if we reach the Achievements section header
+                if (name.toLowerCase().includes('achivement') || name.toLowerCase().includes('achievement')) {
+                    break;
+                }
+                
                 const date = ev[2] ? String(ev[2]).trim() : '';
                 if (name) events.push({ name, date });
             }
@@ -376,11 +382,10 @@ function buildKPIs(lectures, enrollments, exams, transfers, dropouts, counsellin
     const totalLectures = lectures.reduce((s, l) => s + l.count, 0);
     const lectureSub = lectures.map(l => `${l.degree} ${l.mode}: ${l.count}`).join(' | ');
     let totalBudget = 0, totalActual = 0;
-    enrollments.programmes.forEach(p => {
-        if (p.isTotal) {
-            const last = p.values[p.values.length - 1];
-            if (p.type === 'Budget') totalBudget = Number(last) || 0;
-            if (p.type === 'Actual') totalActual = Number(last) || 0;
+    enrollments.budgetActual.forEach(p => {
+        if (p.name.toUpperCase() === 'TOTAL') {
+            totalBudget = p.budget || 0;
+            totalActual = p.actual || 0;
         }
     });
     const totalPapers = exams.reduce((s, e) => s + e.papers, 0);
@@ -503,90 +508,105 @@ function buildHighlightsSection(data) {
     if (!data || !data.events.length) {
         eventsEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px;padding:16px;">No events data</p>';
     } else {
-        const eventIcons = ['🎉', '🩸', '🌙', '🎓', '🏆', '🎭'];
-        let html = '';
+        const imageMapping = [
+            { key: 'thai pongal', file: 'Thai pongal.jpg' },
+            { key: 'blood', file: 'Blood Doation Campaign.jpg' },
+            { key: 'iftar', file: 'Iftar Celebration.jpg' },
+            { key: 'inauguration', file: 'Inauguration Ceremony Intake 20A & 4A.jpg' },
+            { key: 'registration', file: '10th IFSL Intake Students Registration.jpg' },
+            { key: 'ifsl', file: '10th IFSL Intake Students Registration.jpg' }
+        ];
+
+        function getEventImage(name) {
+            if (!name) return 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80';
+            const lower = name.toLowerCase();
+            for (let map of imageMapping) {
+                if (lower.includes(map.key)) return encodeURI(map.file);
+            }
+            // fallback
+            return 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80';
+        }
+        
+        let html = '<div class="roadmap"><div class="roadmap-line"></div>';
         data.events.forEach((ev, idx) => {
-            html += `<div class="event-card event-card-${idx % 4}">
-                <div class="event-icon">${eventIcons[idx % eventIcons.length]}</div>
-                <div class="event-info">
-                    <div class="event-name">${ev.name}</div>
-                    <div class="event-date">${ev.date}</div>
+            const imgUrl = getEventImage(ev.name);
+            const delay = (idx % 10) * 0.1;
+            html += `<div class="roadmap-item fade-in" style="animation-delay: ${delay}s">
+                <div class="roadmap-marker"></div>
+                <div class="roadmap-content">
+                    <div class="roadmap-image-wrap">
+                        <img src="${imgUrl}" alt="${ev.name}" class="roadmap-image" />
+                    </div>
+                    <div class="roadmap-details">
+                        <div class="roadmap-date"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:text-top; margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${ev.date}</div>
+                        <div class="roadmap-name">${ev.name}</div>
+                        
+                    </div>
                 </div>
             </div>`;
         });
+        html += '</div>';
         eventsEl.innerHTML = html;
+        eventsEl.className = 'roadmap-container'; // Override the previous grid class
     }
 }
 
 // ===== ENROLLMENT BUILDERS =====
 function buildEnrollmentTable(enrollData) {
     const wrap = document.getElementById('enrollmentTableWrap');
-    if (!enrollData.programmes.length) { wrap.innerHTML = '<p style="color:var(--text-muted);padding:16px;">No enrollment data</p>'; return; }
-    let html = '<table class="data-table enrollment-table"><thead><tr><th>Programme</th><th>Type</th>';
-    enrollData.headers.forEach(h => html += `<th>${h}</th>`);
-    html += '</tr></thead><tbody>';
-    let lastProg = '';
-    enrollData.programmes.forEach(p => {
-        const showName = p.name !== lastProg;
-        const rowCls = p.type === 'Budget' ? 'budget-row' : 'actual-row';
-        const totalCls = p.isTotal ? ' total-row' : '';
-        html += `<tr class="${rowCls}${totalCls}">`;
-        if (showName) {
-            const span = enrollData.programmes.filter(pp => pp.name === p.name).length;
-            html += `<td rowspan="${span}" style="font-weight:600;">${p.isTotal ? '<strong>' + p.name + '</strong>' : p.name}</td>`;
-            lastProg = p.name;
-        }
-        html += `<td><span class="type-badge ${p.type.toLowerCase()}">${p.type}</span></td>`;
-        p.values.forEach((v, vi) => {
-            const isLast = vi === p.values.length - 1;
-            let cls = isLast ? ' class="total-cell"' : '';
-            let val = v != null ? v : '—';
-            if (isLast && p.type === 'Actual' && !p.isTotal) {
-                const bRow = enrollData.programmes.find(pp => pp.name === p.name && pp.type === 'Budget');
-                if (bRow) {
-                    const bv = Number(bRow.values[vi]) || 0;
-                    cls = Number(val) >= bv ? ' class="total-cell highlight-green"' : ' class="total-cell highlight-red"';
-                }
-            }
-            if (isLast && p.isTotal) cls = p.type === 'Actual' ? ' class="total-cell highlight-green"' : ' class="total-cell"';
-            const bold = p.isTotal ? `<strong>${val}</strong>` : val;
-            html += `<td${cls}>${bold}</td>`;
-        });
+    if (!enrollData.budgetActual || !enrollData.budgetActual.length) { wrap.innerHTML = '<p style="color:var(--text-muted);padding:16px;">No enrollment data</p>'; return; }
+    
+    let html = '<table class="data-table enrollment-table" style="width:100%;"><thead><tr><th>Degree Programme</th><th>Budget</th><th>Actual</th></tr></thead><tbody>';
+    
+    enrollData.budgetActual.forEach(p => {
+        const isTotal = p.name.toLowerCase() === 'total';
+        const variance = p.actual - p.budget;
+        
+        let varColor = variance < 0 ? 'var(--c-red)' : 'var(--c-green)';
+        let varIcon = variance < 0 ? '↓' : '↑';
+        if (variance === 0) { varColor = 'var(--text-sec)'; varIcon = '-'; }
+        
+        let rowStyle = isTotal ? 'background:#f8fafc;' : '';
+        let nameStyle = isTotal ? 'font-weight:800;' : 'font-weight:600; color:var(--c-blue);';
+        let valStyle = isTotal ? 'font-weight:800;' : '';
+        
+        html += `<tr style="${rowStyle}">`;
+        html += `<td style="${nameStyle}">${p.name}</td>`;
+        html += `<td style="${valStyle}">${p.budget}</td>`;
+        html += `<td style="${valStyle}">${p.actual}</td>`;
+        // html += `<td style="color:${varColor}; font-weight:700;">${varIcon} ${Math.abs(variance)}</td>`;
         html += '</tr>';
     });
-    wrap.innerHTML = html + '</tbody></table>';
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
 }
 
 function buildEnrollmentCharts(enrollData) {
-    const progNames = [], budgetTotals = [], actualTotals = [];
-    enrollData.programmes.forEach(p => {
-        if (p.isTotal) return;
-        const last = Number(p.values[p.values.length - 1]) || 0;
-        if (p.type === 'Budget') { progNames.push(p.name); budgetTotals.push(last); }
-        else actualTotals.push(last);
+    if (!enrollData.budgetActual || !enrollData.mohePipeline) return;
+
+    const progNames = [], budgetData = [], actualData = [];
+    enrollData.budgetActual.forEach(p => {
+        if (p.name.toLowerCase() === 'total') return;
+        const name = p.name.length > 20 ? p.name.substring(0, 20) + '...' : p.name;
+        progNames.push(name);
+        budgetData.push(p.budget);
+        actualData.push(p.actual);
     });
-    const tb = enrollData.programmes.find(p => p.isTotal && p.type === 'Budget');
-    const ta = enrollData.programmes.find(p => p.isTotal && p.type === 'Actual');
-    if (tb) {
-        progNames.push('TOTAL');
-        budgetTotals.push(Number(tb.values[tb.values.length - 1]) || 0);
-        actualTotals.push(ta ? Number(ta.values[ta.values.length - 1]) || 0 : 0);
-    }
 
     chartInstances['enrollment'] = new Chart(document.getElementById('enrollmentChart'), {
         type: 'bar',
         data: {
-            labels: progNames.map(n => n.length > 18 ? n.substring(0, 18) + '…' : n),
+            labels: progNames,
             datasets: [
-                { label: 'Budget', data: budgetTotals, backgroundColor: PPT.blue, borderColor: PPT.dblue, borderWidth: 1, borderRadius: 3, borderSkipped: false },
-                { label: 'Actual', data: actualTotals, backgroundColor: PPT.orange, borderColor: '#c66520', borderWidth: 1, borderRadius: 3, borderSkipped: false }
+                { label: 'Budget', data: budgetData, backgroundColor: PPT.blue, borderColor: PPT.dblue, borderWidth: 1, borderRadius: 4 },
+                { label: 'Actual', data: actualData, backgroundColor: PPT.orange, borderColor: '#c66520', borderWidth: 1, borderRadius: 4 }
             ]
         },
         options: {
             responsive: true, maintainAspectRatio: false,
             plugins: {
                 legend: { position: 'top' }, tooltip: tooltipConfig,
-                datalabels: { anchor: 'end', align: 'top', color: '#1a1d23', font: { weight: '600', size: 11 } }
+                datalabels: { anchor: 'end', align: 'top', color: '#1a1d23', font: { weight: '700', size: 12 } }
             },
             scales: {
                 y: { beginAtZero: true, grid: { color: gridColor }, border: { display: false } },
@@ -595,31 +615,33 @@ function buildEnrollmentCharts(enrollData) {
         }
     });
 
-    const pieNames = progNames.slice(0, -1);
-    const pieValues = actualTotals.slice(0, -1);
-    chartInstances['enrollmentPie'] = new Chart(document.getElementById('enrollmentPieChart'), {
-        type: 'pie',
+    const moheNames = [], moheReceived = [], moheSelected = [], moheRegistered = [];
+    enrollData.mohePipeline.forEach(p => {
+        moheNames.push(p.name);
+        moheReceived.push(p.received);
+        moheSelected.push(p.selected);
+        moheRegistered.push(p.registered);
+    });
+
+    chartInstances['mohePipeline'] = new Chart(document.getElementById('mohePipelineChart'), {
+        type: 'bar',
         data: {
-            labels: pieNames,
-            datasets: [{
-                data: pieValues,
-                backgroundColor: pieValues.map((_, i) => PPT_COLORS[i % PPT_COLORS.length]),
-                borderColor: '#ffffff', borderWidth: 2,
-            }]
+            labels: moheNames,
+            datasets: [
+                { label: 'Applications Received', data: moheReceived, backgroundColor: 'rgba(56, 189, 248, 0.6)', borderColor: '#38bdf8', borderWidth: 1, borderRadius: 4 },
+                { label: 'Selected applicants', data: moheSelected, backgroundColor: 'rgba(96, 165, 250, 0.8)', borderColor: '#60a5fa', borderWidth: 1, borderRadius: 4 },
+                { label: 'Registered', data: moheRegistered, backgroundColor: PPT.blue, borderColor: PPT.dblue, borderWidth: 1, borderRadius: 4 }
+            ]
         },
         options: {
             responsive: true, maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'bottom', labels: { padding: 14, color: '#1a1d23' } },
-                tooltip: tooltipConfig,
-                datalabels: {
-                    color: '#fff', font: { weight: '700', size: 12 },
-                    formatter: (value, ctx) => {
-                        const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-                        const pct = ((value / total) * 100).toFixed(1);
-                        return pct > 5 ? pct + '%' : '';
-                    },
-                }
+                legend: { position: 'bottom', labels: { boxWidth: 12 } }, tooltip: tooltipConfig,
+                datalabels: { anchor: 'center', align: 'center', color: '#fff', font: { weight: '800', size: 11 } }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { color: gridColor }, border: { display: false } },
+                x: { grid: { display: false }, border: { display: false } }
             }
         }
     });
@@ -668,10 +690,23 @@ function buildExamCharts(examData) {
 function buildExamCards(examData) {
     if (!examData.length) { document.getElementById('examCardsGrid').innerHTML = ''; return; }
     let html = '';
+    
+    const glassyColors = [
+        'rgba(59, 130, 246, 0.1)',   // blue
+        'rgba(16, 185, 129, 0.1)',   // green
+        'rgba(245, 158, 11, 0.1)',   // orange
+        'rgba(139, 92, 246, 0.1)',   // purple
+        'rgba(239, 68, 68, 0.1)',    // red
+        'rgba(20, 184, 166, 0.1)'    // teal
+    ];
+    
     examData.forEach((e, idx) => {
         const pctColor = e.percentage >= 100 ? 'var(--accent-green)' : e.percentage >= 50 ? 'var(--accent-orange)' : 'var(--accent-red)';
-        html += `<div class="exam-month-card">
-            <div class="exam-month-header exam-hdr-${idx % 12}">${e.cycle}</div>
+        const bgColor = glassyColors[idx % glassyColors.length];
+        const cardStyle = `background: ${bgColor}; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.5);`;
+        
+        html += `<div class="exam-month-card" style="${cardStyle}">
+            <div class="exam-month-header" style="background: transparent; border-bottom: 1px solid rgba(255,255,255,0.3); color: #1e293b;">${e.cycle}</div>
             <div class="exam-month-body">
                 <div class="exam-stat"><span>Exam Papers</span><span class="exam-val">${e.papers}</span></div>
                 <div class="exam-stat"><span>Results Released</span><span class="exam-val">${e.released}</span></div>
@@ -871,12 +906,80 @@ function initNavigation() {
 }
 
 function initAnimations() {
+    // Only observe sections for scroll-spy and basic fade up
     const obs = new IntersectionObserver(entries => {
-        entries.forEach(entry => { if (entry.isIntersecting) { entry.target.style.opacity = '1'; entry.target.style.transform = 'translateY(0)'; } });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.card, .kpi-card').forEach(el => {
-        el.style.opacity = '0'; el.style.transform = 'translateY(16px)';
-        el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        entries.forEach(entry => { 
+            if (entry.isIntersecting) { 
+                entry.target.style.opacity = '1'; 
+                entry.target.style.transform = 'translateY(0)'; 
+            } 
+        });
+    }, { threshold: 0.05 });
+    document.querySelectorAll('.section').forEach(el => {
+        el.style.opacity = '0'; el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
         obs.observe(el);
     });
+}
+
+// ===== HR & OPERATIONS BUILDERS & PARSERS =====
+function parseHRTable(rows) {
+    if (!rows || rows.length < 2) return { headers: [], data: [] };
+    let headerIdx = -1;
+    for (let i = 0; i < Math.min(6, rows.length); i++) {
+        if (rows[i] && rows[i].some(c => c && typeof c === 'string' && !c.includes('Unnamed'))) {
+            headerIdx = i; break;
+        }
+    }
+    if (headerIdx < 0) return { headers: [], data: [] };
+    
+    const headers = rows[headerIdx].filter(h => h && typeof h === 'string' && !h.includes('Unnamed')).map(h => h.trim());
+    const data = [];
+    
+    for (let i = headerIdx + 1; i < rows.length; i++) {
+        const r = rows[i]; if (!r) continue;
+        const rowData = [];
+        let hasData = false;
+        
+        for (let j = 0; j < Math.min(r.length, rows[headerIdx].length); j++) {
+            const head = rows[headerIdx][j];
+            if (head && typeof head === 'string' && !head.includes('Unnamed')) {
+                let val = r[j] != null ? r[j] : '';
+                if (val instanceof Date) {
+                    val = val.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                }
+                rowData.push(val);
+                if (val !== '') hasData = true;
+            }
+        }
+        if (hasData) data.push(rowData);
+    }
+    return { headers, data };
+}
+
+function buildHRSection(meetings, recruitment) {
+    function buildTable(containerId, tblData) {
+        const el = document.getElementById(containerId);
+        if (!el) return;
+        if (!tblData || !tblData.headers.length || !tblData.data.length) {
+            el.innerHTML = '<p style="color:var(--text-mut);padding:16px;">No data available</p>';
+            return;
+        }
+        let html = '<table class="data-table"><thead><tr>';
+        tblData.headers.forEach(h => html += `<th>${h}</th>`);
+        html += '</tr></thead><tbody>';
+        tblData.data.forEach(row => {
+            html += '<tr>';
+            row.forEach((cell, i) => {
+                let styling = i === 0 ? 'font-weight:700; color:#1e293b;' : '';
+                html += `<td style="${styling}">${cell}</td>`;
+            });
+            html += '</tr>';
+        });
+        html += '</tbody></table>';
+        el.innerHTML = html;
+    }
+    
+    buildTable('meetingsTableWrap', meetings);
+    buildTable('recruitmentTableWrap', recruitment);
 }

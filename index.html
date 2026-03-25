@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAB Campus Monthly Progress Dashboard</title>
+    <title>SAB Campus Progress Dashboard</title>
     <meta name="description" content="SAB Campus Monthly Performance Dashboard - Dynamic Data Visualization">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
@@ -22,8 +22,8 @@
         <div class="upload-bg-pattern"></div>
         <div class="upload-container">
             <div class="upload-logo">SAB</div>
-            <h1 class="upload-title">SAB Campus Monthly Progress</h1>
-            <p class="upload-desc">Upload your PowerBI Excel file to generate the dashboard</p>
+            <h1 class="upload-title">SAB Campus Progress</h1>
+            <p class="upload-desc">Upload your Excel file to generate the dashboard</p>
 
             <div class="upload-dropzone" id="dropzone">
                 <svg class="upload-icon" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -50,6 +50,8 @@
                     <span class="format-tag">Lecture_Endings</span>
                     <span class="format-tag">Internship</span>
                     <span class="format-tag">Counselling sessions</span>
+                    <span class="format-tag">Meetings</span>
+                    <span class="format-tag">New Recruitment</span>
                 </div>
             </div>
 
@@ -66,7 +68,7 @@
     <nav class="sidebar" id="sidebar" style="display:none;">
         <div class="sidebar-header">
             <div class="logo-icon">SAB</div>
-            <span class="sidebar-title">Monthly Report</span>
+            <span class="sidebar-title">Report</span>
         </div>
         <ul class="nav-list">
             <li><a href="#hero" class="nav-link active" data-section="hero">
@@ -83,21 +85,15 @@
                     </svg>
                     <span>Academic Admin</span>
                 </a></li>
-            <li><a href="#marketing" class="nav-link" data-section="marketing">
+            <li><a href="#enrollments" class="nav-link" data-section="enrollments">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 20V10" />
-                        <path d="M18 20V4" />
-                        <path d="M6 20v-4" />
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <polyline points="17 11 19 13 23 9"></polyline>
                     </svg>
-                    <span>Marketing</span>
+                    <span>Enrollments</span>
                 </a></li>
-            <li><a href="#highlights" class="nav-link" data-section="highlights">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon
-                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                    <span>Highlights</span>
-                </a></li>
+
             <li><a href="#exams" class="nav-link" data-section="exams">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -113,6 +109,33 @@
                             d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                     </svg>
                     <span>Internship</span>
+                </a></li>
+            <li><a href="#hr" class="nav-link" data-section="hr">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>HR & Operations</span>
+                </a></li>
+            <li><a href="#highlights" class="nav-link" data-section="highlights">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon
+                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                    <span>Highlights</span>
+                </a></li>
+            <li><a href="#achievements" class="nav-link" data-section="achievements">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                        <path d="M4 22h16"></path>
+                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                        <path d="M18 2H6v7a6 6 0 0 0 12 0z"></path>
+                    </svg>
+                    <span>Achievements</span>
                 </a></li>
         </ul>
         <div class="sidebar-footer">
@@ -134,7 +157,7 @@
             <div class="hero-bg-pattern"></div>
             <div class="hero-content">
                 <h1 class="hero-title">SAB Campus</h1>
-                <p class="hero-subtitle">Monthly Progress Report</p>
+                <p class="hero-subtitle">Progress Report</p>
                 <div class="hero-month-badge" id="heroMonthBadge">—</div>
             </div>
             <div class="kpi-row" id="kpiRow"></div>
@@ -174,52 +197,34 @@
             </div>
         </section>
 
-        <!-- Highlights & Events Section -->
-        <section id="highlights" class="section">
-            <div class="section-header">
-                <div class="section-icon highlights-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon
-                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                </div>
-                <h2>Highlights & Events</h2>
-            </div>
-            <div class="card">
-                <h3 class="card-title">Guest Lectures</h3>
-                <div class="table-wrapper" id="guestLecturesTable"></div>
-            </div>
-            <div class="card" style="margin-top:24px;">
-                <h3 class="card-title">Campus Events</h3>
-                <div class="events-grid" id="eventsGrid"></div>
-            </div>
-        </section>
 
-        <!-- Marketing Division Section -->
-        <section id="marketing" class="section">
+        <!-- Enrollments Section -->
+        <section id="enrollments" class="section">
             <div class="section-header">
-                <div class="section-icon marketing-icon">
+                <div class="section-icon enrollments-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 20V10" />
-                        <path d="M18 20V4" />
-                        <path d="M6 20v-4" />
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <polyline points="17 11 19 13 23 9"></polyline>
                     </svg>
                 </div>
-                <h2>Marketing Division</h2>
+                <h2>Enrollments & Admissions</h2>
             </div>
-            <div class="card">
-                <h3 class="card-title">Student Enrollment – Budget vs Actual</h3>
-                <div class="table-wrapper" id="enrollmentTableWrap"></div>
-            </div>
-            <div class="grid-2col" style="margin-top:24px;">
-                <div class="card">
-                    <h3 class="card-title">Enrollment Comparison – Budget vs Actual</h3>
+
+            <div class="grid-2col">
+                <div class="card fade-in">
+                    <h3 class="card-title">Budget vs Actual Enrollment</h3>
                     <div class="chart-container" style="height:350px;"><canvas id="enrollmentChart"></canvas></div>
                 </div>
-                <div class="card">
-                    <h3 class="card-title">Cumulative Enrollment by Programme</h3>
-                    <div class="chart-container" style="height:350px;"><canvas id="enrollmentPieChart"></canvas></div>
+                <div class="card fade-in">
+                    <h3 class="card-title">MoHE Admissions </h3>
+                    <div class="chart-container" style="height:350px;"><canvas id="mohePipelineChart"></canvas></div>
                 </div>
+            </div>
+
+            <div class="card fade-in" style="margin-top:24px;">
+                <h3 class="card-title">Detailed Enrollment Breakdown</h3>
+                <div class="table-wrapper" id="enrollmentTableWrap"></div>
             </div>
         </section>
 
@@ -271,14 +276,91 @@
                     <div class="chart-container" style="height:280px;"><canvas id="caRegistrationChart"></canvas></div>
                 </div>
             </div>
-            <div class="grid-2col" style="margin-top:24px;">
+            <div style="margin-top:24px;">
                 <div class="card">
                     <h3 class="card-title">Counselling Sessions</h3>
                     <div class="chart-container" style="height:300px;"><canvas id="counsellingChart"></canvas></div>
                 </div>
-                <div class="card">
-                    <h3 class="card-title">Welfare Summary</h3>
-                    <div class="welfare-summary" id="welfareSummary"></div>
+            </div>
+        </section>
+
+        <!-- HR & Operations Section -->
+        <section id="hr" class="section">
+            <div class="section-header">
+                <div class="section-icon hr-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <h2>HR & Operations</h2>
+            </div>
+            <div class="grid-2col">
+                <div class="card fade-in">
+                    <h3 class="card-title">Meeting Schedule</h3>
+                    <div class="table-wrapper" id="meetingsTableWrap"></div>
+                </div>
+                <div class="card fade-in">
+                    <h3 class="card-title">New Recruitment</h3>
+                    <div class="table-wrapper" id="recruitmentTableWrap"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Highlights & Events Section -->
+        <section id="highlights" class="section">
+            <div class="section-header">
+                <div class="section-icon highlights-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon
+                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                </div>
+                <h2>Highlights & Events</h2>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Guest Lectures</h3>
+                <div class="table-wrapper" id="guestLecturesTable"></div>
+            </div>
+            <div class="card" style="margin-top:24px;">
+                <h3 class="card-title">Campus Events</h3>
+                <div class="events-grid" id="eventsGrid"></div>
+            </div>
+        </section>
+
+        <!-- Achievements Section -->
+        <section id="achievements" class="section">
+            <div class="section-header">
+                <div class="section-icon achievements-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                        <path d="M4 22h16"></path>
+                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                        <path d="M18 2H6v7a6 6 0 0 0 12 0z"></path>
+                    </svg>
+                </div>
+                <h2>Campus Achievements</h2>
+            </div>
+            <div class="grid-2col">
+                <div class="achievement-card fade-in">
+                    <img src="Sports - Runners-up CPA Cricket Tournament.jpg"
+                        alt="Sports - Runners-up CPA Cricket Tournament">
+                    <div class="achievement-caption">
+                        <div class="ach-title">Runners-up</div>
+                        <div class="ach-sub">CPA Cricket Tournament</div>
+                    </div>
+                </div>
+                <div class="achievement-card fade-in">
+                    <img src="Academics - CFA Institute Research Challenge.jpg"
+                        alt="Academics - CFA Institute Research Challenge">
+                    <div class="achievement-caption">
+                        <div class="ach-title">Academics</div>
+                        <div class="ach-sub">CFA Institute Research Challenge</div>
+                    </div>
                 </div>
             </div>
         </section>

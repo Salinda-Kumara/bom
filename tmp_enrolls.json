@@ -1,0 +1,140 @@
+[
+  [
+    "Degree Programme",
+    "Target",
+    "March",
+    "July",
+    "Cumulative",
+    " Oct",
+    "Cum. Total"
+  ],
+  [
+    null,
+    null,
+    null,
+    null,
+    "(Aug)"
+  ],
+  [
+    "Applied Accounting",
+    "Budget",
+    100,
+    150,
+    250,
+    100,
+    350
+  ],
+  [
+    null,
+    "Actual",
+    152,
+    null,
+    101,
+    null,
+    101
+  ],
+  [
+    "MoHE",
+    "Budget",
+    null,
+    300,
+    300,
+    null,
+    300
+  ],
+  [
+    "(Applied Accounting)",
+    "Actual"
+  ],
+  [
+    "Exemptions",
+    "Budget",
+    null,
+    50,
+    50,
+    null,
+    50
+  ],
+  [
+    null,
+    "Actual",
+    21
+  ],
+  [
+    "Business Analytics",
+    "Budget",
+    50,
+    null,
+    50,
+    50,
+    100
+  ],
+  [
+    null,
+    "Actual",
+    29,
+    null,
+    15,
+    null,
+    15
+  ],
+  [
+    "MoHE (Business Analytics)",
+    "Budget",
+    null,
+    100,
+    100,
+    null,
+    100
+  ],
+  [
+    null,
+    "Actual"
+  ],
+  [
+    "TOTAL",
+    "Budget",
+    150,
+    600,
+    750,
+    150,
+    900
+  ],
+  [
+    null,
+    "Actual",
+    202,
+    null,
+    116,
+    null,
+    116
+  ],
+  [],
+  [],
+  [],
+  [
+    "Degree",
+    "Applications received",
+    "MoHE Selected applicants",
+    "Registered applicants"
+  ],
+  [
+    "Applied Accounting ",
+    294,
+    279,
+    "221*"
+  ],
+  [
+    "Business Analytics",
+    100,
+    100,
+    "82*"
+  ],
+  [
+    "Total",
+    null,
+    null,
+    303
+  ],
+  []
+]

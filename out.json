@@ -1,0 +1,166 @@
+{
+  "Lecture_Breakdown": {
+    "columns": [
+      "Degree",
+      "Mode",
+      "Lecture_Count"
+    ],
+    "first_row": {
+      "Degree": "BA",
+      "Mode": "Weekday",
+      "Lecture_Count": "40"
+    }
+  },
+  "Exam_Status": {
+    "columns": [
+      "Exam_Cycle",
+      "No of Exam Papers",
+      "Results Released",
+      "Complete percentage"
+    ],
+    "first_row": {
+      "Exam_Cycle": "September",
+      "No of Exam Papers": "42",
+      "Results Released": "42",
+      "Complete percentage": "100"
+    }
+  },
+  "Highlights": {
+    "columns": [
+      "No.",
+      "Date",
+      "Time",
+      "Venue ",
+      "Reource Person ",
+      "Qualifications ",
+      "Guest Lecture Topic ",
+      " Subject ",
+      "Batch "
+    ],
+    "first_row": {
+      "No.": "1",
+      "Date": "7th February 2026",
+      "Time": "3.30pm - 6.30 pm",
+      "Venue ": "CA ",
+      "Reource Person ": "Dr. Roshan Jayantha ",
+      "Qualifications ": "Fellow chartered accounted (FCA), Phd,MBA",
+      "Guest Lecture Topic ": "From Research Problem to Data Collection: A Practical Workshop for Research Students",
+      " Subject ": "Dissertation (4Y. 2 Sem) ",
+      "Batch ": "15 D (WE), 16A (MOHE), 16B (WE)(WD)"
+    }
+  },
+  "Enrollments": {
+    "columns": [
+      "Degree Programme",
+      "Target",
+      "March",
+      "July",
+      "Cumulative",
+      "\u00a0Oct",
+      "Cum. Total"
+    ],
+    "first_row": {
+      "Degree Programme": null,
+      "Target": null,
+      "March": null,
+      "July": null,
+      "Cumulative": "(Aug)",
+      "\u00a0Oct": null,
+      "Cum. Total": null
+    }
+  },
+  "Batch_Transfers": {
+    "columns": [
+      "Month ",
+      "Count"
+    ],
+    "first_row": {
+      "Month ": "Jan",
+      "Count": "15"
+    }
+  },
+  "Dropouts": {
+    "columns": [
+      "Month ",
+      "Count"
+    ],
+    "first_row": {
+      "Month ": "Jan ",
+      "Count": "7"
+    }
+  },
+  "Lecture_Commencements": {
+    "columns": [
+      "Unnamed: 0",
+      "Date",
+      "Batch",
+      "Y:S"
+    ],
+    "first_row": {
+      "Unnamed: 0": "New Semester commencement",
+      "Date": "2026-03-07T00:00:00",
+      "Batch": "17C WD/WE",
+      "Y:S": "Y3 S2"
+    }
+  },
+  "Lecture_Endings": {
+    "columns": [
+      "Unnamed: 0",
+      "Unnamed: 1",
+      "Unnamed: 2",
+      "Unnamed: 3",
+      "Unnamed: 4"
+    ],
+    "first_row": {
+      "Unnamed: 0": null,
+      "Unnamed: 1": null,
+      "Unnamed: 2": "Date",
+      "Unnamed: 3": "Batch",
+      "Unnamed: 4": "Y:S"
+    }
+  },
+  "Internship": {
+    "columns": [
+      "Audit",
+      "268"
+    ],
+    "first_row": {
+      "Audit": "Big 3",
+      "268": "85"
+    }
+  },
+  "Counselling sessions ": {
+    "columns": [
+      "Month",
+      "Counselling\u00a0sessions\u00a0"
+    ],
+    "first_row": {
+      "Month": "Jan",
+      "Counselling\u00a0sessions\u00a0": "9"
+    }
+  },
+  "Meetings": {
+    "columns": [
+      "Unnamed: 0",
+      "Unnamed: 1",
+      "Unnamed: 2"
+    ],
+    "first_row": {
+      "Unnamed: 0": null,
+      "Unnamed: 1": "Meeting",
+      "Unnamed: 2": "No. Meeting"
+    }
+  },
+  "New Recruitment": {
+    "columns": [
+      "Unnamed: 0",
+      "Unnamed: 1",
+      "Unnamed: 2"
+    ],
+    "first_row": {
+      "Unnamed: 0": null,
+      "Unnamed: 1": null,
+      "Unnamed: 2": null
+    }
+  }
+}
